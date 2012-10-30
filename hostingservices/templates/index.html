@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Welcome to dockitcms demo site</h1>
+<p>
+    <a href="/hyperadmin/">Admin Interface</a>
+    <a href="/cmsadmin/">CMS Admin Interface</a>
+    username:cmsdemo, password:cmsdemo
+</p>
+<p>
+    The code that runs this site can be found at: <a href="https://github.com/zbyte64/dockitcmsdemo">https://github.com/zbyte64/dockitcmsdemo</a>
+</p>
+
+<h2>Active Viewpoints</h2>
+<ul>
+{% for view_point in view_points %}
+<li>
+<a href="{{view_point.get_absolute_url}}">{{view_point}}</a>
+</li>
+{% endfor %}
+<ul>
+{% endblock %}

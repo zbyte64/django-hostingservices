@@ -1,0 +1,18 @@
+{% load widgetblocks scopes %}
+<html>
+<head>
+{% block head %}
+
+{% endblock %}
+</head>
+<body>
+{% if user.is_staff %}
+{% viewscope %}
+{% endif %}
+<div id="banner">{% widgetblock "banner" %}</div>
+<div id="right_col">{% widgetblock "right_col" %}</div>
+{% block content %}
+{% endblock %}
+<div id="footer">{% widgetblock "footer" %}</div>
+</body>
+</html>

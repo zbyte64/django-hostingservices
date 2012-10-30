@@ -1,0 +1,6 @@
+Django==1.4.2
+-e git+https://github.com/zbyte64/django-hyperadmin.git#egg=django-hyperadmin
+-e git+https://github.com/zbyte64/django-dockit.git#egg=django-dockit
+-e git+https://github.com/zbyte64/django-hyperadmin-client.git#egg=django-hypradmin-client
+-e git+https://github.com/zbyte64/django-hyperadmin-dockitresource.git#egg=django-hyperadmin-dockitresource
+mimeparse
