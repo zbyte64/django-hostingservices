@@ -1,5 +1,7 @@
 from django import forms
 
+from dockit.forms.fields import SchemaChoiceField
+
 from hostingservices.services.models import ServicePlanRequest, HostedSite
 
 class EnvironForm(forms.Form):
@@ -11,20 +13,11 @@ class EnvironForm(forms.Form):
             self.initial[key] = value
 
 class AddPlanForm(forms.Form):
-    site = forms.CharField() #TODO use a dockit form field
+    site = SchemaChoiceField(HostedSite.objects.all())
     
     def __init__(self, **kwargs):
         self.instance = kwargs.pop('instance')
         super(AddPlanForm, self).__init__(**kwargs)
-    
-    def clean_site(self):
-        slug = self.cleaned_data.get('site', None)
-        if slug:
-            try:
-                return HostedSite.objects.get(slug=slug)
-            except HostedSite.DoesNotExist:
-                raise forms.ValidationError('Invalid site')
-        return slug
     
     def get_service_plan_request_kwargs(self):
         assert self.cleaned_data['site']

@@ -39,8 +39,8 @@ class Service(schema.Document):
             plan_request.save()
             return plan
         if plan_request.action == 'remove':
-            plan_request.relase()
-            self.remove_plan(plan_request.plan)
+            plan_request.plan.release()
+            return self.remove_plan(plan_request.plan)
         raise TypeError, 'Unrecognized Action: %s' % plan_request.action
     
     def get_shell(self, logger=None, cwd=None, **popen_kwargs):

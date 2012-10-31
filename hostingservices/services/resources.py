@@ -203,7 +203,8 @@ class ServicePlanResource(DocumentResource):
     
     def get_item_outbound_links(self, item):
         links = super(ServicePlanResource, self).get_item_outbound_links(item)
-        links.append(self.get_remove_plan_link(item, link_factor='LO'))
+        if item.instance.active:
+            links.append(self.get_remove_plan_link(item, link_factor='LO'))
         return links
     
     def get_service_plan_request_resource(self):
@@ -234,6 +235,8 @@ class ServicePlanRequestResource(DocumentResource):
             item = resource.get_resource_item(item.instance.plan)
             links.append(resource.get_item_link(item, link_factor='LO'))
         return links
+    
+    #TODO link for re-executing request
 
 hyperadmin.site.register(ServicePlanRequest, ServicePlanRequestResource)
 
