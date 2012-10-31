@@ -39,7 +39,8 @@ class Service(schema.Document):
             plan_request.save()
             return plan
         if plan_request.action == 'remove':
-            return self.remove_plan(plan_request.plan)
+            plan_request.relase()
+            self.remove_plan(plan_request.plan)
         raise TypeError, 'Unrecognized Action: %s' % plan_request.action
     
     def get_shell(self, logger=None, cwd=None, **popen_kwargs):
@@ -70,7 +71,6 @@ class ServicePlan(schema.Document):
         self.remove_date = datetime.datetime.now()
         self.active = False
         self.save()
-        return self.service.release_plan(self)
     
     class Meta:
         typed_field = 'service_plan_type'
@@ -87,11 +87,18 @@ class ServicePlanRequest(schema.Document):
     action = schema.CharField()
     plan = schema.ReferenceField(ServicePlan, blank=True, null=True)
     params = schema.DictField()
+    log = schema.TextField(blank=True)
+    failure_log = schema.TextField(blank=True)
     
     def execute_request(self):
         self.pending = False
         self.save()
-        return self.service.execute_plan_request(self)
+        try:
+            return self.service.execute_plan_request(self)
+        except Exception as error:
+            self.failure_log = str(error)
+            #TODO include stack trace
+            self.save()
     
     def schedule(self):
         from hostingservices.services.tasks import process_service_plan_request

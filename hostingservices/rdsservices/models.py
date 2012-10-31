@@ -13,8 +13,7 @@ class RDSService(Service):
     admin_pass = schema.CharField(blank=True)
     
     def get_admin_connection(self):
-        password = self.admin_pass or None
-        db = MySQLdb.connect(host=self.host, user=self.admin_user, passwd=password, port=self.port)
+        db = MySQLdb.connect(host=self.host, user=self.admin_user, passwd=self.admin_pass, port=self.port)
         return db
     
     def add_plan(self, site, **kwargs):
@@ -28,7 +27,7 @@ class RDSService(Service):
                 'dbhost':self.host,
                 'dbport':self.port,}
         commands = ["create database %(dbname)s character set utf8", 
-                    "grant all on %(dbname)s.* to '%(dbuser)s@'%%' identified by '%(dbpass)s",
+                    "grant all on %(dbname)s.* to '%(dbuser)s'@'%%' identified by '%(dbpass)s'",
                     "flush privileges",]
         
         connection = self.get_admin_connection()

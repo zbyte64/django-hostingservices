@@ -224,7 +224,16 @@ class ServicePlanResource(DocumentResource):
 hyperadmin.site.register(ServicePlan, ServicePlanResource)
 
 class ServicePlanRequestResource(DocumentResource):
-    pass
+    def get_service_plan_resource(self):
+        return self.site.registry[ServicePlan]
+    
+    def get_item_outbound_links(self, item):
+        links = super(ServicePlanRequestResource, self).get_item_outbound_links(item)
+        if item.instance.plan:
+            resource = self.get_service_plan_resource()
+            item = resource.get_resource_item(item.instance.plan)
+            links.append(resource.get_item_link(item, link_factor='LO'))
+        return links
 
 hyperadmin.site.register(ServicePlanRequest, ServicePlanRequestResource)
 
