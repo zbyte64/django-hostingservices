@@ -17,6 +17,8 @@ class HostedSite(schema.Document):
     def __unicode__(self):
         return self.slug
 
+HostedSite.objects.index('slug').commit()
+
 class Service(schema.Document):
     #CONSIDER the following should be ran in a task
     #however they will be triggered by an API call, do we need an intermediate object?
@@ -32,7 +34,10 @@ class Service(schema.Document):
     
     def execute_plan_request(self, plan_request):
         if plan_request.action == 'add':
-            return self.add_plan(plan_request.site, **plan_request.params)
+            plan = self.add_plan(plan_request.site, **plan_request.params)
+            plan_request.plan = plan
+            plan_request.save()
+            return plan
         if plan_request.action == 'remove':
             return self.remove_plan(plan_request.plan)
         raise TypeError, 'Unrecognized Action: %s' % plan_request.action

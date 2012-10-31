@@ -157,6 +157,7 @@ INSTALLED_APPS = (
     'hyperadmin',
     'hyperadminclient',
     'dockitresource',
+    'djcelery',
     
     'hostingservices.services',
     'hostingservices.rdsservices',
@@ -185,3 +186,8 @@ LOGGING = {
     }
 }
 
+CELERY_ALWAYS_EAGER = True
+
+if 'djcelery' in INSTALLED_APPS:
+    import djcelery
+    djcelery.setup_loader()

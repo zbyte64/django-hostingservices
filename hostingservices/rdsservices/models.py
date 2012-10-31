@@ -10,10 +10,11 @@ class RDSService(Service):
     host = schema.CharField()
     port = schema.IntegerField(default=3306)
     admin_user = schema.CharField()
-    admin_pass = schema.CharField()
+    admin_pass = schema.CharField(blank=True)
     
     def get_admin_connection(self):
-        db = MySQLdb.connect(host=self.host, user=self.admin_user, passwd=self.admin_pass, port=self.port)
+        password = self.admin_pass or None
+        db = MySQLdb.connect(host=self.host, user=self.admin_user, passwd=password, port=self.port)
         return db
     
     def add_plan(self, site, **kwargs):
@@ -62,6 +63,18 @@ class RDSServicePlan(ServicePlan):
     def get_environ(self):
         return {'DATABASE_URL': self.get_service_url()}
     
+    def get_db_connection(self):
+        db = MySQLdb.connect(host=self.environ['dbhost'], user=self.environ['dbuser'], passwd=self.enviorn['dbpass'], port=self.environ['dbport'])
+        return db
+    
     class Meta:
         typed_key = 'rds_service'
+
+class DatabaseBackup(schema.Document):
+    service_plan = schema.ReferenceField(RDSServicePlan)
+    backup = schema.FileField(upload_to='rds/backups/', blank=True, null=True)
+    timestamp = schema.DateTimeField()
+    
+    def perform_backup(self):
+        pass
 
