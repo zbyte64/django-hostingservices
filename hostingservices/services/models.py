@@ -87,6 +87,10 @@ class ServicePlanRequest(schema.Document):
         self.pending = False
         self.save()
         return self.service.execute_plan_request(self)
+    
+    def schedule(self):
+        from hostingservices.services.tasks import process_service_plan_request
+        process_service_plan_request.delay(self.pk)
 
 ServicePlanRequest.objects.index('pending').commit()
 
