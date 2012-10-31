@@ -8,7 +8,7 @@ class EnvironForm(forms.Form):
     def __init__(self, **kwargs):
         self.instance = kwargs.pop('instance')
         super(EnvironForm, self).__init__(**kwargs)
-        for key, value in self.instance.get_environ():
+        for key, value in self.instance.get_environ().iteritems():
             self.fields[key] = forms.CharField()
             self.initial[key] = value
 
@@ -20,7 +20,6 @@ class AddPlanForm(forms.Form):
         super(AddPlanForm, self).__init__(**kwargs)
     
     def get_service_plan_request_kwargs(self):
-        assert self.cleaned_data['site']
         return {'site': self.cleaned_data['site'],
                 'service':self.instance,
                 'action':'add'}

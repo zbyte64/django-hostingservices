@@ -7,25 +7,14 @@ from hyperadmin.resources.crud.views import CRUDView
 from dockitresource.views import DocumentDetailMixin
 
 
-class EnvironViewMixin(ResourceViewMixin):
-    def get_parent(self):
-        if not hasattr(self, '_parent'):
-            queryset = self.resource.parent.get_queryset(self.request.user)
-            self._parent = queryset.get(pk=self.kwargs['pk'])
-        return self._parent
-    
-    def get_state_data(self):
-        state = super(EnvironViewMixin, self).get_state_data()
-        state['parent'] = self.get_parent()
-        return state
-    
+class EnvironViewMixin(DocumentDetailMixin, CRUDView):
     def get_environ_link(self, **form_kwargs):
-        #form_kwargs.update(self.get_form_kwargs())
+        form_kwargs.update(self.get_form_kwargs())
         return self.resource.get_resource_link(form_kwargs=form_kwargs)
 
-
 class EnvironView(EnvironViewMixin, View):
-    view_class = 'change_form'
+    #view_class = 'change_form'
+    view_class = 'change_list'
     
     def get(self, request, *args, **kwargs):
         return self.generate_response(self.get_environ_link())

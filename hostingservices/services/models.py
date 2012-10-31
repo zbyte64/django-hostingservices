@@ -11,7 +11,11 @@ class HostedSite(schema.Document):
         environ = dict()
         plans = ServicePlan.objects.filter(site=self, active=True)
         for plan in plans:
-            environ.update(plan.get_environ())
+            if not plan.service:
+                plan.active = False
+                plan.save()
+            else:
+                environ.update(plan.get_environ())
         return environ
     
     def __unicode__(self):
@@ -75,7 +79,7 @@ class ServicePlan(schema.Document):
     class Meta:
         typed_field = 'service_plan_type'
 
-ServicePlan.objects.index('site', 'active').commit()
+ServicePlan.objects.filter(active=True).index('site').commit()
 
 class ServicePlanRequest(schema.Document):
     '''

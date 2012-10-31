@@ -26,10 +26,6 @@ class EnvironResource(BaseResource):
     def get_prompt(self):
         return self.resource_name
     
-    def get_form_kwargs(self, **kwargs):
-        kwargs['instance'] = self.state['parent']
-        return kwargs
-    
     def get_urls(self):
         def wrap(view, cacheable=False):
             return self.as_view(view, cacheable)
@@ -45,8 +41,11 @@ class EnvironResource(BaseResource):
         )
         return urlpatterns
     
+    def get_queryset(self, *args, **kwargs):
+        return self.parent.get_queryset(*args, **kwargs)
+    
     def get_absolute_url(self):
-        return self.reverse('environ', pk=self.state['parent'].pk)
+        return self.reverse('environ', pk=self.state.item.instance.pk)
     
     def get_environ_link(self, form_kwargs=None, **kwargs):
         if form_kwargs is None:
@@ -63,7 +62,9 @@ class EnvironResource(BaseResource):
         link_kwargs.update(kwargs)
         environ_link = Link(**link_kwargs)
         return environ_link
-
+    
+    def get_item_url(self, item):
+        return self.get_absolute_url()
 
 class HostedSiteResource(DocumentResource):
     def __init__(self, **kwargs):
@@ -87,7 +88,8 @@ class HostedSiteResource(DocumentResource):
     
     def get_item_outbound_links(self, item):
         links = super(HostedSiteResource, self).get_item_outbound_links(item)
-        environ = self.environ_resource.fork_state(parent=item.instance)
+        subitem = self.environ_resource.get_resource_item(item.instance)
+        environ = self.environ_resource.fork_state(item=subitem)
         links.append(environ.get_resource_link(link_factor='LO'))
         return links
 

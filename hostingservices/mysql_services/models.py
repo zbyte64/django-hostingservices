@@ -6,7 +6,7 @@ from hostingservices.services.models import Service, ServicePlan
 from hostingservices.utils import passgen
 
 
-class RDSService(Service):
+class MysqlService(Service):
     host = schema.CharField()
     port = schema.IntegerField(default=3306)
     admin_user = schema.CharField()
@@ -35,7 +35,7 @@ class RDSService(Service):
         for cmd in commands:
             c.execute(cmd % info)
         
-        plan = RDSServicePlan(service=self,
+        plan = MysqlServicePlan(service=self,
                               site=site,
                               add_log='',
                               active=True,
@@ -53,25 +53,25 @@ class RDSService(Service):
             c.execute(cmd % plan.environ)
     
     class Meta:
-        typed_key = 'rds_service'
+        typed_key = 'mysql_service'
 
-class RDSServicePlan(ServicePlan):
+class MysqlServicePlan(ServicePlan):
     def get_service_url(self):
-        return 'mysql://%(dbuser)s:%(dbpass)s@%(dbhost)s:%(dbport)s/%(dbname)s' % self.enviorn
+        return 'mysql://%(dbuser)s:%(dbpass)s@%(dbhost)s:%(dbport)s/%(dbname)s' % self.environ
     
     def get_environ(self):
         return {'DATABASE_URL': self.get_service_url()}
     
     def get_db_connection(self):
-        db = MySQLdb.connect(host=self.environ['dbhost'], user=self.environ['dbuser'], passwd=self.enviorn['dbpass'], port=self.environ['dbport'])
+        db = MySQLdb.connect(host=self.environ['dbhost'], user=self.environ['dbuser'], passwd=self.environ['dbpass'], port=self.environ['dbport'])
         return db
     
     class Meta:
-        typed_key = 'rds_service'
+        typed_key = 'mysql_service'
 
 class DatabaseBackup(schema.Document):
-    service_plan = schema.ReferenceField(RDSServicePlan)
-    backup = schema.FileField(upload_to='rds/backups/', blank=True, null=True)
+    service_plan = schema.ReferenceField(MysqlServicePlan)
+    backup = schema.FileField(upload_to='mysql/backups/', blank=True, null=True)
     timestamp = schema.DateTimeField()
     
     def perform_backup(self):

@@ -31,6 +31,7 @@ DOCKIT_BACKENDS = {
 DOCKIT_INDEX_BACKENDS = {
     'default': {
         'ENGINE': 'dockit.backends.djangodocument.backend.ModelIndexStorage',
+        'INDEX_TASKS': 'dockit.backends.djangodocument.tasks.IndexTasks',
     },
 }
 
@@ -160,7 +161,8 @@ INSTALLED_APPS = (
     'djcelery',
     
     'hostingservices.services',
-    'hostingservices.rdsservices',
+    'hostingservices.mysql_services',
+    'hostingservices.rabbitmq_services',
 )
 
 # A sample logging configuration. The only tangible logging
