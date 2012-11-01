@@ -51,13 +51,17 @@ class SupervisorService(Service):
         Then reload supervisor
         CONSIDER: perhaps each user should get their own supervisor handler?
         """
+        conf_path = self.get_conf_path(site)
+        if os.path.exists(conf_path):
+            raise TypeError, "Service already exists"
+        
         context = self.get_conf_context(site)
         info = self.get_plan_environ(site)
         template = self.get_conf_template()
         
         conf = template.render(context)
         
-        conf_file = open(self.get_conf_path(site), 'w')
+        conf_file = open(conf_path, 'w')
         conf_file.write(conf)
         conf_file.close()
         
