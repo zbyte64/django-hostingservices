@@ -163,6 +163,8 @@ INSTALLED_APPS = (
     'hostingservices.services',
     'hostingservices.mysql_services',
     'hostingservices.rabbitmq_services',
+    'hostingservices.supervisor_services',
+    'hostingservices.memcache_services',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -187,6 +189,8 @@ LOGGING = {
         },
     }
 }
+
+SUPERVISORD_CONF_DIRECTORY = '/etc/supervisor/user.conf.d/'
 
 CELERY_ALWAYS_EAGER = True
 

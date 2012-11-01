@@ -1,3 +1,4 @@
+import sys, traceback
 import datetime
 
 from dockit import schema
@@ -50,7 +51,7 @@ class Service(schema.Document):
     def get_shell(self, logger=None, cwd=None, **popen_kwargs):
         from hostingservices.utils import TaskLogger, ShellSession
         if logger is None:
-            logger = TaskLogger()
+            logger = TaskLogger('hostingservices.services.models.Service.'+self.service_type)
         return ShellSession(logger, cwd=cwd, **popen_kwargs)
     
     class Meta:
@@ -100,8 +101,13 @@ class ServicePlanRequest(schema.Document):
         try:
             return self.service.execute_plan_request(self)
         except Exception as error:
-            self.failure_log = str(error)
-            #TODO include stack trace
+            #include stack trace
+            typ, val, tb = sys.exc_info()
+            message = traceback.format_exception_only(typ, val)[0]
+            body = traceback.format_exc()
+            
+            self.failure_log = '%s\n%s' % (message, body)
+            
             self.save()
     
     def schedule(self):
